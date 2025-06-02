@@ -3,6 +3,17 @@ import { CartController } from './cart.controller';
 import { CartService } from './cart.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Product } from '../products/entities/product.entity';
+import { CartItem } from './entities/cart-item.entity';
+import { Repository } from 'typeorm';
+
+const mockRepo = () => ({
+  findOneBy: jest.fn(),
+  find: jest.fn(),
+  save: jest.fn(),
+  create: jest.fn(),
+  remove: jest.fn(),
+  clear: jest.fn(),
+});
 
 describe('CartController', () => {
   let controller: CartController;
@@ -14,9 +25,11 @@ describe('CartController', () => {
         CartService,
         {
           provide: getRepositoryToken(Product),
-          useValue: {
-            findOneBy: jest.fn(), // mock básico do repo de produtos
-          },
+          useFactory: mockRepo,
+        },
+        {
+          provide: getRepositoryToken(CartItem),
+          useFactory: mockRepo,
         },
       ],
     }).compile();
